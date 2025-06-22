@@ -166,14 +166,19 @@ The pipeline is fully adapted for Modal serverless infrastructure:
 modal run test_modal.py --test imports
 modal run test_modal.py --test download
 
-# Pipeline execution
-modal run modal_pretraining.py --step download    # T4, 16GB RAM
-modal run modal_pretraining.py --step full --gpu-tier a100  # A100, 32GB RAM
+# Fast validation (recommended for testing)
+modal run modal_pretraining.py::run_pretraining --step full --gpu-tier t4 --quick true   # ~16 docs, 2-3 min
+modal run modal_pretraining.py::run_pretraining --step full --gpu-tier t4 --quick false  # ~55 docs, 5-10 min
+
+# Pipeline execution steps
+modal run modal_pretraining.py::run_pretraining --step download --quick true
+modal run modal_pretraining.py::run_pretraining --step process --quick true
+modal run modal_pretraining.py::run_pretraining --step train --quick true
 
 # Artifact management
-modal run modal_pretraining.py --list-files
-modal run modal_pretraining.py --download "results/full_result.json"
-modal run modal_pretraining.py --cleanup
+modal run modal_pretraining.py::run_pretraining --list-files
+modal run modal_pretraining.py::run_pretraining --download "results/full_result.json"
+modal run modal_pretraining.py::run_pretraining --cleanup
 ```
 
 #### Environment Configurations
@@ -191,7 +196,14 @@ modal run modal_pretraining.py --cleanup
 - Resolved JSON serialization issues with `ProcessedDocument` objects
 - Successfully running full pipeline on Modal T4 GPUs
 
-**Current Status**: Pipeline actively running on Modal for validation and testing
+✅ **Fast Validation Mode**: Optimized for rapid end-to-end testing
+- Quick validation: ~16 documents total (5+3+3+3+2 per domain)
+- Medium validation: ~55 documents total (20+10+10+10+5 per domain)
+- Training steps reduced to 20 for fast iteration
+- Complete pipeline validation in 2-3 minutes
+- Enables rapid debugging and component testing
+
+**Current Status**: Pipeline fully functional with fast validation capabilities
 
 #### Production Deployment Strategy
 🎯 **Modal for Testing Only**: Modal serves as our small-scale testing and validation platform

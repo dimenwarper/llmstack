@@ -15,7 +15,7 @@ from pretraining import PretrainingPipeline, get_toy_dataset_config
     memory=16384,  # 16GB RAM
     timeout=3600,  # 1 hour timeout
 )
-def run_pretraining_step(step: str = "full", config_overrides: dict = None):
+def run_pretraining_step(step: str = "full", config_overrides: dict = None, quick_validation: bool = True):
     """Run a pretraining pipeline step on Modal."""
     import os
     import json
@@ -41,11 +41,38 @@ def run_pretraining_step(step: str = "full", config_overrides: dict = None):
     config.model_output_dir = "/artifacts/models/checkpoints"
     config.log_dir = "/artifacts/logs"
     
-    # Reduce training steps for testing
-    config.training.max_steps = 100
-    config.training.eval_steps = 50
-    config.training.save_steps = 100
-    config.training.batch_size = 4  # Smaller batch for T4
+    # Reduce everything for fast validation
+    config.training.max_steps = 20  # Very few steps for validation
+    config.training.eval_steps = 10
+    config.training.save_steps = 20
+    config.training.batch_size = 2  # Smaller batch for T4
+    
+    # Reduce dataset sizes for fast processing
+    if quick_validation:
+        for data_source in config.data_sources:
+            if data_source.name == "toy_web":
+                data_source.max_documents = 5   # Tiny for validation
+            elif data_source.name == "toy_books":
+                data_source.max_documents = 3   # Tiny for validation  
+            elif data_source.name == "toy_code":
+                data_source.max_documents = 3   # Tiny for validation
+            elif data_source.name == "toy_news":
+                data_source.max_documents = 3   # Tiny for validation
+            elif data_source.name == "toy_academic":
+                data_source.max_documents = 2   # Tiny for validation
+        print("🚀 Quick validation mode: Using tiny dataset (~16 documents total)")
+    else:
+        for data_source in config.data_sources:
+            if data_source.name == "toy_web":
+                data_source.max_documents = 20  # Down from 400
+            elif data_source.name == "toy_books":
+                data_source.max_documents = 10  # Down from 100
+            elif data_source.name == "toy_code":
+                data_source.max_documents = 10  # Down from 100
+            elif data_source.name == "toy_news":
+                data_source.max_documents = 10  # Down from 100
+            elif data_source.name == "toy_academic":
+                data_source.max_documents = 5   # Down from 50
     
     print(f"Running pretraining step: {step}")
     print(f"Config: {config}")
@@ -206,7 +233,8 @@ def run_pretraining(
     config_file: str = None,
     list_files: bool = False,
     download: str = None,
-    cleanup: bool = False
+    cleanup: bool = False,
+    quick: bool = True  # Default to quick validation mode
 ):
     """
     Main entrypoint for Modal pretraining pipeline.
@@ -253,7 +281,7 @@ def run_pretraining(
     if gpu_tier == "a100" and step == "full":
         result = run_full_pretraining.remote(config_overrides)
     else:
-        result = run_pretraining_step.remote(step, config_overrides)
+        result = run_pretraining_step.remote(step, config_overrides, quick)
     
     print(f"=== PRETRAINING RESULT ===")
     print(result)
