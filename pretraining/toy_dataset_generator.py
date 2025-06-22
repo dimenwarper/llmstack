@@ -144,17 +144,18 @@ class ToyDatasetDownloader:
             documents = []
             text_column = config['text_column']
             
-            # Take first N samples and shuffle
+            # Take first N samples and shuffle - respect max_documents from config
+            target_size = config['sample_size']
             samples = []
             for i, item in enumerate(dataset):
-                if i >= config['sample_size'] * 3:  # Get 3x to allow for filtering
+                if i >= target_size * 3:  # Get 3x to allow for filtering
                     break
                 if text_column in item and item[text_column]:
                     samples.append(item)
             
             # Shuffle and take subset
             random.shuffle(samples)
-            samples = samples[:config['sample_size']]
+            samples = samples[:target_size]
             
             for item in samples:
                 text = item[text_column]

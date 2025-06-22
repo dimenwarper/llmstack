@@ -35,6 +35,13 @@ class RoPEPositionalEncoding(nn.Module):
 
 def apply_rope(x: torch.Tensor, cos: torch.Tensor, sin: torch.Tensor) -> torch.Tensor:
     """Apply rotary position embedding to tensor."""
+    # x shape: [batch, heads, seq_len, head_dim]
+    # cos/sin shape: [seq_len, head_dim]
+    
+    # Ensure cos/sin have the right shape for broadcasting
+    cos = cos.unsqueeze(0).unsqueeze(0)  # [1, 1, seq_len, head_dim]
+    sin = sin.unsqueeze(0).unsqueeze(0)  # [1, 1, seq_len, head_dim]
+    
     # Split last dimension into pairs
     x1, x2 = x[..., ::2], x[..., 1::2]
     
@@ -83,10 +90,10 @@ class MultiHeadAttention(nn.Module):
         k = self.k_proj(x).view(batch_size, seq_len, self.num_heads, self.head_dim)
         v = self.v_proj(x).view(batch_size, seq_len, self.num_heads, self.head_dim)
         
-        # Apply RoPE
-        cos, sin = self.rope(x, seq_len)
-        q = apply_rope(q, cos, sin)
-        k = apply_rope(k, cos, sin)
+        # Skip RoPE for now to debug tensor issues
+        # cos, sin = self.rope(x, seq_len)
+        # q = apply_rope(q, cos, sin) 
+        # k = apply_rope(k, cos, sin)
         
         # Transpose for attention computation
         q = q.transpose(1, 2)  # [batch, heads, seq_len, head_dim]

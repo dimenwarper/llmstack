@@ -48,7 +48,20 @@ class PretrainingPipeline:
         """Step 1: Download raw data."""
         logger.info("Step 1: Downloading raw data...")
         
+        # Update downloader with our modified config
         downloader = ToyDatasetDownloader()
+        
+        # Override the default sample sizes with our config
+        logger.info("Updating dataset sample sizes for fast validation:")
+        for data_source in self.config.data_sources:
+            domain = data_source.domain
+            if domain in downloader.dataset_configs:
+                old_size = downloader.dataset_configs[domain]['sample_size']
+                downloader.dataset_configs[domain]['sample_size'] = data_source.max_documents
+                logger.info(f"  {domain}: {old_size} -> {data_source.max_documents} documents")
+            else:
+                logger.warning(f"  Domain {domain} not found in downloader configs")
+        
         dataset = downloader.download_all_data()
         downloader.save_dataset(dataset, self.config.raw_data_dir)
         

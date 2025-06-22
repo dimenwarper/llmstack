@@ -47,6 +47,13 @@ def run_pretraining_step(step: str = "full", config_overrides: dict = None, quic
     config.training.save_steps = 20
     config.training.batch_size = 2  # Smaller batch for T4
     
+    # Make model even smaller for debugging
+    config.model.hidden_size = 256
+    config.model.num_layers = 4
+    config.model.num_heads = 4
+    config.model.intermediate_size = 1024
+    config.model.max_seq_length = 512  # Much shorter sequences
+    
     # Reduce dataset sizes for fast processing
     if quick_validation:
         for data_source in config.data_sources:
@@ -142,8 +149,11 @@ def run_pretraining_step(step: str = "full", config_overrides: dict = None, quic
         return result
         
     except Exception as e:
-        error_result = {"status": "error", "step": step, "error": str(e)}
+        import traceback
+        full_traceback = traceback.format_exc()
+        error_result = {"status": "error", "step": step, "error": str(e), "traceback": full_traceback}
         print(f"Error in step {step}: {e}")
+        print(f"Full traceback:\n{full_traceback}")
         return error_result
 
 @app.function(

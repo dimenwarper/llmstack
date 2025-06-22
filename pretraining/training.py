@@ -47,10 +47,13 @@ class PretrainingDataset(Dataset):
         else:
             tokens = tokens + [0] * (self.max_length - len(tokens))  # Pad with 0
         
+        # Ensure consistent sequence length
+        seq_len = len(tokens) - 1  # -1 for shifting input/labels
+        
         return {
             'input_ids': torch.tensor(tokens[:-1], dtype=torch.long),
             'labels': torch.tensor(tokens[1:], dtype=torch.long),
-            'attention_mask': torch.ones(len(tokens) - 1, dtype=torch.bool)
+            'attention_mask': torch.ones(seq_len, dtype=torch.bool)
         }
     
     def _simple_tokenize(self, text: str) -> List[int]:
