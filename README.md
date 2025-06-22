@@ -60,26 +60,33 @@ modal run test_modal.py --test download
 
 ### Run Pretraining Pipeline
 ```bash
-# Run full pipeline on T4 GPU
-modal run modal_pretraining.py --step full --gpu-tier t4
+# Quick validation (recommended) - complete pipeline in 2-3 minutes
+uv run modal run modal_pretraining.py::run_pretraining --step full --gpu-tier t4 --quick true
 
-# Run individual steps
-modal run modal_pretraining.py --step download
-modal run modal_pretraining.py --step process
-modal run modal_pretraining.py --step train
+# Medium validation - more documents for thorough testing
+uv run modal run modal_pretraining.py::run_pretraining --step full --gpu-tier t4 --quick false
 
-# Run on A100 for serious training
-modal run modal_pretraining.py --step full --gpu-tier a100
+# Run individual steps for debugging
+uv run modal run modal_pretraining.py::run_pretraining --step download --quick true
+uv run modal run modal_pretraining.py::run_pretraining --step process --quick true
+uv run modal run modal_pretraining.py::run_pretraining --step train --quick true
 
-# List artifacts
-modal run modal_pretraining.py --list-files
+# Production training on A100 (for larger experiments)
+uv run modal run modal_pretraining.py::run_pretraining --step full --gpu-tier a100 --quick false
 
-# Download specific results
-modal run modal_pretraining.py --download "results/full_result.json"
-
-# Clean up artifacts
-modal run modal_pretraining.py --cleanup
+# Artifact management
+uv run modal run modal_pretraining.py::run_pretraining --list-files
+uv run modal run modal_pretraining.py::run_pretraining --download "results/full_result.json"
+uv run modal run modal_pretraining.py::run_pretraining --download "models/checkpoints/final_model.pt"
+uv run modal run modal_pretraining.py::run_pretraining --cleanup
 ```
+
+#### Expected Results
+The quick validation mode will show:
+- **Training loss**: 9.59 → 7.30 (good learning progression)
+- **Evaluation loss**: 7.67 → 7.22 (model improving)
+- **Perplexity**: 2150 → 1370 (significant improvement)
+- **Complete in**: 2-3 minutes end-to-end
 
 ### Local Development
 ```bash
