@@ -16,10 +16,10 @@ import time
 import math
 from tqdm import tqdm
 
-from model import create_model
-from data_processing import DataProcessor
-from data_selection import create_target_distribution, HybridSelector
-from data_sampling import create_sampler, SamplingConfig
+from .model import create_model
+from .data_processing import DataProcessor
+from .data_selection import create_target_distribution, HybridSelector
+from .data_sampling import create_sampler, SamplingConfig
 
 logger = logging.getLogger(__name__)
 

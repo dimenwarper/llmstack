@@ -18,6 +18,7 @@ dependencies = [
     
     # Modal and cloud
     "modal>=0.64.0",
+    "hf-transfer>=0.1.0",
     
     # Progress and logging
     "tqdm>=4.65.0",
@@ -40,6 +41,10 @@ dev = [
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["pretraining*", "midtraining*", "posttraining*", "models*", "modal_utils*"]
+exclude = ["references*"]
 
 [tool.black]
 line-length = 100

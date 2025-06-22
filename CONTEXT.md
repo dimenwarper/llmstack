@@ -182,6 +182,30 @@ modal run modal_pretraining.py --cleanup
 - **Storage**: `/artifacts/` mount for persistent data, models, and logs
 - **Optimizations**: HuggingFace caching, transfer acceleration, progress bars disabled
 
+#### Testing Progress & Status
+✅ **Modal Integration Complete**: Successfully deployed and tested on Modal infrastructure
+- Fixed package structure with proper Python modules (`modal_utils`, `pretraining`, etc.)
+- Resolved dependency management with `uv` and `pyproject.toml`
+- Added `hf-transfer` for fast dataset downloads
+- Fixed `trust_remote_code=True` for HuggingFace dataset access
+- Resolved JSON serialization issues with `ProcessedDocument` objects
+- Successfully running full pipeline on Modal T4 GPUs
+
+**Current Status**: Pipeline actively running on Modal for validation and testing
+
+#### Production Deployment Strategy
+🎯 **Modal for Testing Only**: Modal serves as our small-scale testing and validation platform
+- Rapid iteration and debugging
+- Cost-effective small-scale experiments
+- Pipeline validation and component testing
+- Small-scale proof-of-concept runs
+
+🚀 **Dedicated Cluster for Production**: All large-scale validation and production training runs will be conducted on rented GPU clusters
+- Higher performance for large-scale training and validation
+- Cost optimization for extended training runs
+- Full resource control and customization
+- Production-grade model training at scale
+
 ## Technical Requirements
 - Framework: PyTorch/Transformers ✅
 - Hardware: GPU cluster support ✅ (Modal T4/A100)

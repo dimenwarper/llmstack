@@ -200,7 +200,7 @@ def cleanup_artifacts():
         return "No artifacts to clean up"
 
 @app.local_entrypoint()
-def main(
+def run_pretraining(
     step: str = "full",
     gpu_tier: str = "t4",  # t4, a100
     config_file: str = None,

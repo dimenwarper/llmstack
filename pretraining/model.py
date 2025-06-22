@@ -252,7 +252,7 @@ def create_model(config) -> SmallTransformer:
 
 def main():
     """Test model creation and forward pass."""
-    from config import get_toy_dataset_config
+    from .config import get_toy_dataset_config
     
     config = get_toy_dataset_config()
     model = create_model(config.model)

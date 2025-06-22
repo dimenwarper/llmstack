@@ -9,13 +9,13 @@ import logging
 from typing import List, Dict, Any
 import argparse
 
-from config import get_toy_dataset_config, PretrainingConfig
-from toy_dataset_generator import ToyDatasetDownloader
-from data_processing import DataProcessor
-from data_selection import HybridSelector, create_target_distribution
-from data_sampling import create_sampler, SamplingConfig
-from model import create_model
-from training import PretrainingDataset, PretrainingTrainer
+from .config import get_toy_dataset_config, PretrainingConfig
+from .toy_dataset_generator import ToyDatasetDownloader
+from .data_processing import DataProcessor
+from .data_selection import HybridSelector, create_target_distribution
+from .data_sampling import create_sampler, SamplingConfig
+from .model import create_model
+from .training import PretrainingDataset, PretrainingTrainer
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -141,7 +141,18 @@ class PretrainingPipeline:
         
         if len(target_docs) < 5:
             logger.warning(f"Only {len(target_docs)} target documents found, using all processed docs")
-            self.selected_documents = self.processed_documents
+            # Convert ProcessedDocument objects to dicts
+            self.selected_documents = []
+            for doc in self.processed_documents:
+                doc_dict = {
+                    'text': doc.text,
+                    'domain': doc.domain,
+                    'quality': doc.quality_class,
+                    'quality_score': doc.quality_score,
+                    'toxicity_score': doc.toxicity_score,
+                    'metadata': doc.metadata
+                }
+                self.selected_documents.append(doc_dict)
         else:
             # Initialize hybrid selector
             self.data_selector = HybridSelector()

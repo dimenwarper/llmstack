@@ -136,9 +136,9 @@ class ToyDatasetDownloader:
         try:
             # Load dataset
             if config['config']:
-                dataset = load_dataset(config['dataset'], config['config'], split=config['split'], streaming=True)
+                dataset = load_dataset(config['dataset'], config['config'], split=config['split'], streaming=True, trust_remote_code=True)
             else:
-                dataset = load_dataset(config['dataset'], split=config['split'], streaming=True)
+                dataset = load_dataset(config['dataset'], split=config['split'], streaming=True, trust_remote_code=True)
             
             # Sample documents
             documents = []

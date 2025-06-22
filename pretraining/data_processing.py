@@ -335,7 +335,7 @@ class DataProcessor:
 
 def main():
     """Test data processing pipeline."""
-    from config import get_toy_dataset_config
+    from .config import get_toy_dataset_config
     
     config = get_toy_dataset_config()
     processor = DataProcessor(config)
