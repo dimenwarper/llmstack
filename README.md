@@ -37,3 +37,53 @@ llmstack/
 ## Development Methodology
 
 This project serves as an experiment in agentic development, where AI coding assistants handle the majority of implementation work with minimal human intervention in the actual coding process.
+
+## Quick Start with Modal
+
+### Setup
+```bash
+# Install dependencies
+pip install -e .
+
+# Set up Modal (requires Modal account)
+modal setup
+```
+
+### Test Modal Setup
+```bash
+# Test imports and GPU access
+modal run test_modal.py --test imports
+
+# Test data download
+modal run test_modal.py --test download
+```
+
+### Run Pretraining Pipeline
+```bash
+# Run full pipeline on T4 GPU
+modal run modal_pretraining.py --step full --gpu-tier t4
+
+# Run individual steps
+modal run modal_pretraining.py --step download
+modal run modal_pretraining.py --step process
+modal run modal_pretraining.py --step train
+
+# Run on A100 for serious training
+modal run modal_pretraining.py --step full --gpu-tier a100
+
+# List artifacts
+modal run modal_pretraining.py --list-files
+
+# Download specific results
+modal run modal_pretraining.py --download "results/full_result.json"
+
+# Clean up artifacts
+modal run modal_pretraining.py --cleanup
+```
+
+### Local Development
+```bash
+# Run pipeline locally for development
+cd pretraining
+python pipeline.py --step full
+```

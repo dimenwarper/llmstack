@@ -137,19 +137,58 @@ Data Sources → Curation → Selection → Sampling → Training
 
 #### Usage
 ```bash
-# Full pipeline
+# Local development
 python pretraining/pipeline.py --step full
 
-# Individual steps
-python pretraining/pipeline.py --step [download|process|select|sample|train]
+# Modal cloud execution
+modal run modal_pretraining.py --step full --gpu-tier t4
+modal run modal_pretraining.py --step full --gpu-tier a100
 ```
+
+### ✅ Modal Cloud Integration
+The pipeline is fully adapted for Modal serverless infrastructure:
+
+#### Modal Components
+- **Top-level dependency management** (`pyproject.toml`) - Unified dependency management
+- **Auto-discovery integration** (`modal_utils.py`) - Automatic Python package detection
+- **Modal pipeline adapter** (`modal_pretraining.py`) - Cloud-native pipeline execution
+- **Testing utilities** (`test_modal.py`) - Validation and smoke tests
+
+#### Cloud Infrastructure Features
+- **GPU Flexibility**: T4 for testing, A100 for production training
+- **Serverless Scaling**: Pay-per-use compute with automatic scaling
+- **Persistent Storage**: Modal volumes for models, data, and artifacts
+- **Resource Management**: Configurable memory, GPU, and timeout settings
+
+#### Modal Usage Patterns
+```bash
+# Test setup
+modal run test_modal.py --test imports
+modal run test_modal.py --test download
+
+# Pipeline execution
+modal run modal_pretraining.py --step download    # T4, 16GB RAM
+modal run modal_pretraining.py --step full --gpu-tier a100  # A100, 32GB RAM
+
+# Artifact management
+modal run modal_pretraining.py --list-files
+modal run modal_pretraining.py --download "results/full_result.json"
+modal run modal_pretraining.py --cleanup
+```
+
+#### Environment Configurations
+- **Testing**: T4 GPU, 16GB RAM, 1-hour timeout, reduced training steps
+- **Production**: A100 GPU, 32GB RAM, 2-hour timeout, full training
+- **Storage**: `/artifacts/` mount for persistent data, models, and logs
+- **Optimizations**: HuggingFace caching, transfer acceleration, progress bars disabled
 
 ## Technical Requirements
 - Framework: PyTorch/Transformers ✅
-- Hardware: GPU cluster support ✅
+- Hardware: GPU cluster support ✅ (Modal T4/A100)
 - Data handling: Efficient data loading and preprocessing with configurable filtering ✅
 - Monitoring: Training metrics, toxicity tracking, and domain composition logging ✅
 - Checkpointing: Model saving and resumption with temporal metadata ✅
+- Cloud Infrastructure: Modal serverless deployment ✅
 
 ## Development Constraints
 - All code written by AI assistants
